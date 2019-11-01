@@ -1,0 +1,116 @@
+This directory contains a "C++" code sample authored by Scarlett Davidson.
+The contents is a C++ implementation of a FINAL CLASS Project originally
+written in "C".  The purpose of this code sample is strictly for demonstration
+purposes only, a C++ project for Linux environment.
+
+Author:            Scarlett J. Davidson
+Contents:          C++ implementation of Final Project
+                   originally written in "C", April 2014
+                   for Adv Systems Programming
+                   Operating System:  Linux Mint Mate 19.1
+Creation Date:     Fall 2019
+
+
+PROJECT REQUIREMENTS
+* Create a single source code program which can be launched as either 
+  a server or a client with a command line switch.  
+
+* The program shall be written in C++ or C, with extra credit for C
+  implementation.
+
+* The program shall use two methods of IPC of students choice.
+
+* One form of IPC shall support the server to accept task requests from
+  multiple client processes.  
+
+* The server shall process client requests on behalf of clients.
+
+* Client requests shall be simple linux terminal commands such as:
+         ls, pwd, cat filename
+
+* The server shall use the second form of IPC to report results back to
+  the client.
+
+* Thus clients shall allow the user make command line task requests to
+  the server.
+
+* The server shall execute the requested command line task on behalf of
+  the clients.
+
+* The server shall report the task results back to the client.
+
+* Clients shall display task results reported by the server.
+
+METHODS OF IPC
+For my final project the first IPC method is shared memory and the 
+second IPC is a named FIFO pipe (/tmp/sjdavids[PID]).
+
+STEPS to DEMONSTRATE the client/server program named "myprog2".  
+Expect to see 4 terminal windows (one server, 3 clients).  
+The server will receive task requests from any of the clients, 
+the tasks will be launched by the server and results will be
+returned to the client and displayed in the client windows.
+In this example you will see the server is capable to handle
+multiple clients requests and continue to manage simultaneously
+the output to the multiple client windows.
+
+1) Open 4 separate linux terminal windows.  One for launching the server, the
+   others for launching 3 separate clients.
+
+2) In one terminal, extract artifacts from the tar file, change to the project
+directory and build the program (myproj2)
+          tar -xvf Proj2_ipcClientServer.tar
+          cd Proj2_ipcClientServer
+   	      make
+
+3) In each remaining terminal window, change into the project directory.
+          cd Proj2_ipcClientServer
+
+4) In the SERVER terminal window, launch the server.  
+   Server Command Options will be displayed.
+      	  ./myproj2 -s
+
+5) Once the Server is running, the user may redisplay Server control 
+   command options by typing "help" in the server terminal window.
+          help
+
+6) In each of the other 3 terminal windows, launch a CLIENT. For this demo
+   clients will be further referred to as client A, client B, client C
+      	  ./myproj2 -c
+
+7) In client A window, launch a task.  It can be something as simple as a
+   typical linux command (ls, pwd).  To simulate a long running task, launch
+   the bash script "myecho" with a single string argument.  You will see a 
+   count of the string "AAA" display in client A window.
+       	  ./myecho AAA
+
+8) In client B window, repeat same instructions as step 6.  You will see a 
+   count of the string "BBB" display in client B window.
+      	  ./myecho BBB
+
+9) In client B window, repeat same instructions as step 6. You will see a 
+   count of the string "CCC" display in client C window.
+      	  ./myecho CCC
+
+10) In the server window, enter the "list" command:
+      	  list
+
+   You will see a list of the active client process ids and command task
+
+11) To review other server command options, enter "help"
+       	  help
+
+12) To exit out of any client or server, enter "exit"
+       	  exit
+
+NOTE:  In the event of an unexpected interrupt of the server, where cleanup
+       did not properly occur, a restart of the SERVER, may result in display
+       of the following message "SERVER Already Up".  If this occurs,first use
+       the "-x" switch to perform the proper cleanup and try restarting the
+       Server.
+           ./myproj2 -x
+           ./myproj2 -s
+       
+
+	    
+

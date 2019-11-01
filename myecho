@@ -1,0 +1,16 @@
+#!/bin/bash
+
+# This simple looping shell script was written for demonstration
+# of myproj2.
+#
+# It's purpose is to launch from inside the myproj2 client and simulate an ongoing process. 
+#
+# Usage:  ./myecho [single_string_your_choice] 
+
+COUNTER=0
+while [ $COUNTER -lt 10000000 ]; do
+  echo $COUNTER $1
+  let COUNTER=COUNTER+1
+done
+
+  
