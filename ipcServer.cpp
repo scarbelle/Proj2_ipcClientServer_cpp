@@ -41,14 +41,15 @@ int IpcServer::ipc_setup_request()
   
   return (_ipcRequest.setupSharedMemAccess());
 }
-  
+
 int IpcServer::ipc_setup_result()
 {
-  _ipcRequest.init(_progMode,
-                   &serverIsDown,
-                   &setServerIsDown);
+  // NOOP - to meet ipcCSProg pure virtual interface
+}
   
-  return (_ipcRequest.setupSharedMemAccess());
+int IpcServer::ipc_setup_result(int *fifo_fd, int clientid, char *clientfifo)
+{
+  return (_ipcResult.makeFIFO(&fifo_fd, client->client_id, client->fifoname));
 }
   
 // Launch
@@ -218,8 +219,8 @@ void* IpcServer::processClientRequest(void *clientInfo)
   //	  client->client_id, client->textlen, client->text);     //print to server stdout
 
   // Make Server-Client FIFO 
-  //if ((status = cs_makeFIFO(&fifo_fd, client->client_id, client->fifoname) == EXIT_SUCCESS))
-  if ((status = _ipcResult.makeFIFO(&fifo_fd, client->client_id, client->fifoname) == EXIT_SUCCESS))
+  // if ((status = _ipcResult.makeFIFO(&fifo_fd, client->client_id, client->fifoname) == EXIT_SUCCESS))
+  if ((status = ipc_setup_result(&fifo_fd, client->client_id, client->fifoname)) == EXIT_SUCCESS))
     {
       FILE *fp;
       char *line;

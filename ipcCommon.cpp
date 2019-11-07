@@ -2,6 +2,11 @@
 
 const char* const SHMEM_NAME = "/sjdavids_SERVER";   // shared memory name & location /dev/shm/sjdavids_SERVER
 
+//
+// FIFO
+// - task output communication server->client 
+// - per client FIFO name:  /tmp/sjdavids_FIFO[clientid]
+//
 const char* const MYFIFO="/tmp/sjdavids_FIFO";       // FIFO filename & location  
 const char* const SEND_INTERRUPT = "\n---sjdavidsINTERRUPTsjdavids---\n";
 const char* const READ_INTERRUPT = "---sjdavidsINTERRUPTsjdavids---\n";
