@@ -12,7 +12,7 @@
  *
  */
 
-#include <ipcServer.h>
+#include "ipcServer.h"
 
 // Forward Declarations
 void*IpcServer::processClientRequest(void *clientInfo);
@@ -32,15 +32,23 @@ virtual IpcServer::~IpcServer()
 {
 }
 
-// Init
-void IpcServer::init();
-{
-}
-  
 // Setup
 int IpcServer::ipc_setup_request()
 {
-  return (_ipcRequest.setupSharedMemAccess(_mem_ServerConnect)) ;
+  _ipcRequest.init(_progMode,
+                   &serverIsDown,
+                   &setServerIsDown);
+  
+  return (_ipcRequest.setupSharedMemAccess());
+}
+  
+int IpcServer::ipc_setup_result()
+{
+  _ipcRequest.init(_progMode,
+                   &serverIsDown,
+                   &setServerIsDown);
+  
+  return (_ipcRequest.setupSharedMemAccess());
 }
   
 // Launch
@@ -50,7 +58,6 @@ int IpcServer::ipc_launch_request_handler()
   int status;
 
   // Always Listen and capture client request
-  //status = pthread_create(&tid_doClientRequest, NULL, s_unloadClientRequest_shm, NULL);
   status = pthread_create(&tid_doClientRequest, NULL,
 			  _ipcRequest.unloadClientRequests, &processClientRequest);
   if (status != 0){
@@ -200,7 +207,7 @@ void void IpcServer::displayServerCmdList()
 //          5. read popen output and write line to fifo
 //          6. cleanup
 //
-void*IpcServer::processClientRequest(void *clientInfo)
+void* IpcServer::processClientRequest(void *clientInfo)
 {
   shmem_struct_t *client = (shmem_struct_t*)(clientInfo);
   int fifo_fd;
@@ -232,38 +239,38 @@ void*IpcServer::processClientRequest(void *clientInfo)
       // Open pipe to process and read client text command
       fp = popen(client->text, "r");
       if (!fp)
-	{
-	  perror("SERVER error - popen)");
-	  client->tresult = status;
-	  pthread_exit(NULL);
-	}
+        {
+          perror("SERVER error - popen)");
+          client->tresult = status;
+          pthread_exit(NULL);
+        }
 
       line = NULL;
       linelen = 0;
       // Read one line of client command output from pipe above.
       while ((cmdout = getline(&line, &linelen, fp)) != ERROR)
-	{
-	  // Write the readin line to the server-client fifo.
-	  if (write(fifo_fd, line, (strlen(line)+1)) == ERROR){  // +1 to include newline char
-	    perror("processClientRequest - write error");
-	  }
-	  line=NULL;
-	  linelen=0;
-	}
+        {
+          // Write the readin line to the server-client fifo.
+          if (write(fifo_fd, line, (strlen(line)+1)) == ERROR){  // +1 to include newline char
+            perror("processClientRequest - write error");
+          }
+          line=NULL;
+          linelen=0;
+        }
       free(line);
 
       if (pclose(fp) == ERROR){                     // close - server end
-	perror("SERVER - pclose");
-	client->tresult = EXIT_FAILURE;
-	pthread_exit(NULL);
+        perror("SERVER - pclose");
+        client->tresult = EXIT_FAILURE;
+        pthread_exit(NULL);
       }
 
       taskqRemove(node);     // Remove from Server's Client Work Queue List
 
       if (close(fifo_fd) == ERROR){                     // close - server end
-	perror("SERVER - myfifo");
-	client->tresult = EXIT_FAILURE;
-	pthread_exit(NULL);
+        perror("SERVER - myfifo");
+        client->tresult = EXIT_FAILURE;
+        pthread_exit(NULL);
       }
 
       cs_removeFifo(client->fifoname);
@@ -278,7 +285,7 @@ void*IpcServer::processClientRequest(void *clientInfo)
 //     taskqAdd - add client request to the task queue (server)
 //
 //
-ClientRequestMsg*  IpcServer::taskqAdd(ClientRequestMsg_t *cli)
+ClientRequestMsg*  IpcServer::taskqAdd(ClientRequestMsg *cli)
 {
   if (!cli) 
     {
@@ -287,7 +294,7 @@ ClientRequestMsg*  IpcServer::taskqAdd(ClientRequestMsg_t *cli)
     }
 
   //make new node for task queue entry
-  ClientRequestMsg_t *node = malloc(sizeof(shmem_struct_t));
+  ClientRequestMsg *node = malloc(sizeof(shmem_struct_t));
   if (node == NULL){
     perror("taskqAdd: Bad malloc");
     return NULL;

@@ -1,9 +1,9 @@
 #include "ipcCSProg.h"
 
-Client_Server_Program::Client_Server_Program(ProgMode id)
-  :_progModeId(id), _serverDown(True)
+Client_Server_Program::Client_Server_Program(ProgMode mode)
+  :_progMode(mode)
 {
-
+  setServerIsDown(true);
 }
 
 
@@ -13,21 +13,35 @@ Client_Server_Program::~Client_Server_Program()
 }
 
 
+// Critical Section
+// Between main thread (process user commands)
+// and worker thread (process client requests)
+void Client_Server_Program::setServerIsDown(bool state)
+{
+  std::lock_guard<std::mutex> lock(_serverDownMutex);
+  _serverDown = state;
+}
+
+
+// Critical Section
+// Between main thread (process user commands)
+// and worker thread (process client requests)
 bool Client_Server_Program::serverIsDown()
 {
+  std::lock_guard<std::mutex> lock(_serverDownMutex);
   return _serverDown;
 }
 
 
-ProgMode Client_Server_Program::get_progModeId()
+ProgMode Client_Server_Program::get_progMode()
 {
-  return _progModeId;
+  return _progMode;
 }
 
 
 int Client_Server_Program::run()
 {
-  if (ipc_setup_request() != EXIT_SUCCESS)
+  if (ipc_setup_request(_progMode) != EXIT_SUCCESS)
     {
       return EXIT_FAILURE;
     }

@@ -20,17 +20,17 @@
 #include <unistd.h>               // getopt, STDIN, STDOUT, execlp
 
 /*
-#include <fcntl.h>                // open
-#include <stdlib.h>               // EXIT_FAILURE
-#include <stdio.h>
-//#include <sys/stat.h>             // mkfifo
-#include <errno.h>
-#include <limits.h>               // PATH_MAX
-#include <stdarg.h>               // va_list
-#include <pthread.h>              // Threads
+  #include <fcntl.h>                // open
+  #include <stdlib.h>               // EXIT_FAILURE
+  #include <stdio.h>
+  //#include <sys/stat.h>             // mkfifo
+  #include <errno.h>
+  #include <limits.h>               // PATH_MAX
+  #include <stdarg.h>               // va_list
+  #include <pthread.h>              // Threads
 
-#include <sys/mman.h>
-#include <string.h>
+  #include <sys/mman.h>
+  #include <string.h>
 */
 
 //#include <semaphore.h>
@@ -71,7 +71,7 @@ int main(int argc, char* argv[])
 {
   int opt;
   bool helpflg=false;
-  ProgMode progModeId=ProgMode::UNSET;
+  ProgMode progMode=ProgMode::UNSET;
   bool debugServerCleanup=false;
 
   //--------------------------
@@ -84,33 +84,33 @@ int main(int argc, char* argv[])
       switch(opt) {
 
       case 'h':      // usage help
-	helpflg=true;
-	break;
+        helpflg=true;
+        break;
 
       case 's':      // run as server
-	if (progModeId == ProgMode::CLIENT)
-	  {helpflg = true;}
-	else
-	  {progModeId = ProgMode::SERVER;}
-	break;
+        if (progMode == ProgMode::CLIENT)
+          {helpflg = true;}
+        else
+          {progMode = ProgMode::SERVER;}
+        break;
 
       case 'c':      // run as client
-	if (progModeId == ProgMode::SERVER)
-	  {helpflg = true;}
-	else
-	  {progModeId = ProgMode::CLIENT;}
-	break;
+        if (progMode == ProgMode::SERVER)
+          {helpflg = true;}
+        else
+          {progMode = ProgMode::CLIENT;}
+        break;
 
       case 'x':     // For Debug Cleanup - Not public to user
-	progModeId=ProgMode::SERVER;
-	debugServerCleanup = true;
-	//s_cleanup_shm_sema();
-	//cs_cleanup_shm();
-	//return 0;
-	break;
+        progMode=ProgMode::SERVER;
+        debugServerCleanup = true;
+        //s_cleanup_shm_sema();
+        //cs_cleanup_shm();
+        //return 0;
+        break;
 
       default:
-	helpflg=1;
+        helpflg=1;
       }
     }
 
@@ -120,12 +120,12 @@ int main(int argc, char* argv[])
   //    ProgMode was not provided
   //    User requested usage message
   if ( (argc > optind)  ||
-       (progModeId == ProgMode::UNSET) ||
+       (progMode == ProgMode::UNSET) ||
        helpflg )
-       {
-	 progHelp(argv[0]);
-	 return 0;
-       }
+    {
+      progHelp(argv[0]);
+      return 0;
+    }
  
 
   //---------------------------
@@ -138,24 +138,25 @@ int main(int argc, char* argv[])
 
   int status;
 
-  if (progModeId == ProgMode::SERVER)
+  if (progMode == ProgMode::SERVER)
     {
       IpcServer ipcServer;
       if (debugServerCleanup)
-	{
-	  ipcServer.ipc_cleanup_request();
-	  status = 0;
-	}
+        {
+          ipcServer.ipc_cleanup_request();
+          status = 0;
+        }
       else
-	{
-	  status = ipcServer.run();
-	}
+        {
+          status = ipcServer.run();
+        }
     }
   else
     {
       /*      IpcClient ipcClient;
-      status = ipcClient.run();
-      */    }
+              status = ipcClient.run();
+      */
+    }
 
   return status;
 }

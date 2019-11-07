@@ -12,6 +12,7 @@ const char* const READ_SHUTDOWN = "---sjdavidsSHUTDOWNsjdavids---\n";
 int const ERROR = -1;
 int const FALSE = 0;
 int const TRUE = 1;
+int const MAXLINE = 4096;
 
 int ClientRequestMsgSz = sizeof(ClientRequestMsg_t);
 

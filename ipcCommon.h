@@ -22,8 +22,7 @@
 
 
 
-extern const char* const SHMEM_NAME;        // shared memory name & location /dev/shm/sjdavids_SERVER
-
+extern const char* const SHMEM_NAME; 
 extern const char* const MYFIFO;
 extern const char* const SEND_INTERRUPT;
 extern const char* const READ_INTERRUPT;
@@ -41,6 +40,7 @@ enum class ProgMode
 extern int const ERROR;
 extern int const FALSE;
 extern int const TRUE;
+extern int const MAXLINE;
 
 //
 //  Client Request Message 
@@ -48,7 +48,7 @@ extern int const TRUE;
 //           1) send/receive client task requests in shared memory IPC (server connection point)
 //           2) holding active client task requests in server's active client task queue
 //
-typedef struct ClientRequestMsg
+typedef struct ClientRequestMsg_t
 {
   pid_t client_id;              // Client Id
   size_t textlen;               // Client Request - text length
@@ -58,9 +58,9 @@ typedef struct ClientRequestMsg
   int fifo_fd;                  // Fifo fd
   pthread_t tid;                // Thread id for this client request processing
   int tresult;                  // Holds thread status for client request processing - not currently checked
-  ClientRequestMsg* next;       // Next server active client task queue entry
-  ClientRequestMsg* prev;       // Previous server active client task queue entry
-} ClientRequestMsg_t;
+  ClientRequestMsg_t* next;       // Next server active client task queue entry
+  ClientRequestMsg_t* prev;       // Previous server active client task queue entry
+} ClientRequestMsg;
 
 extern int ClientRequestMsgSz;
 

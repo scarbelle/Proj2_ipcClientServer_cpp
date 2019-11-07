@@ -1,6 +1,7 @@
 #ifndef IPC_CSPROG_H
 #define IPC_CSPROG_H
 
+#include <mutex>
 #include "ipcCommon.h"
 
 //  Client_Server_Program - Abstract Class
@@ -17,8 +18,11 @@ class Client_Server_Program
   int run();
   
  protected:
-  // Init
-  void init();
+  // Set ServerIsDown
+  void setServerIsDown(bool state);
+  
+  // Get ServerIsDown
+  bool serverIsDown();
 
   // Setup
   virtual int ipc_setup_request()=0;
@@ -35,8 +39,9 @@ class Client_Server_Program
   virtual void ipc_cleanup_request()=0;
   virtual void ipc_cleanup_result()=0;
 
-  ProgMode _progModeId;
-  bool _serverDown;       // Initally server is down, false once server is up and running
+  ProgMode _progMode;
+  bool _serverDown;       // Initally true, false once server is up and running
+  std::mutex _serverDown_mutex;
 
 };
 

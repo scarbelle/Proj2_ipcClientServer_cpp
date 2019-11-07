@@ -25,9 +25,6 @@ class IpcServer : public Client_Server_Program
   
   // Destructor
   virtual ~IpcServer();
-
-  // Init
-  void init();
   
   // Process_cmds
   virtual void process_user_cmds();
@@ -53,14 +50,14 @@ class IpcServer : public Client_Server_Program
 
   void cancelClient(int clientid, int opt);
   void* processClientRequest(void *clientInfo);
-  
 
+  
   IpcSharedMem _ipcRequest;
-  //IpcFifo      _ipcResult;
+  IpcFifo      _ipcResult;
  
-  ClientRequestMsg_t* _mem_ServerConnect;   // client-server shared memory connection info
+  ClientRequestMsg_t* _memServerConnect;    // client-server shared memory connection info
   ClientRequestMsg_t* _client_request;      // task queue nodeptr - holds client request info
-  ClientRequestMsg_t* _HEAD_taskq=nullptr;     // head task queue list containing all active client requests
+  ClientRequestMsg_t* _HEAD_taskq=nullptr;  // head task queue list containing all active client requests
 
 };
 

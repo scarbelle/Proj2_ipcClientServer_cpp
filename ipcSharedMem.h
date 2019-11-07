@@ -1,8 +1,8 @@
 #ifndef IPC_SHARED_MEM_H
 #define IPC_SHARED_MEM_H
 
-#include "common.h"
-#include "ipcServer.h"
+#include "ipcCommon.h"
+//#include "ipcServer.h"
 
 class IpcSharedMem
 {
@@ -10,18 +10,23 @@ class IpcSharedMem
   IpcSharedMem();
   ~IpcSharedMem();
 
-  int setupSharedMemAccess(ClientRequestMsg_t*& memServerConnect);
-  void* unloadClientRequests(void (*processFunction)());
+  void init(ProgMode mode,
+            void (*setServerIsDownFunc)(bool state),
+            bool (*serverIsDownFunc)(void));
+  int setupSharedMemAccess();
+  void* unloadClientRequests(void* (*processFunction)(void *clientReq));
   int loadClientRequest();
-  void cleanup_server();
-  void cleanup_client();
+  int cleanup();
+  //  void cleanup_client();
 
   // Private
-  static void server_cleanup_shm_sema(void);
-  static void cleanup_shm(void);
+  void (*_setServerIsDown)(bool state);
+  bool (*_serverIsDown)(void);
+  int cleanup_shm_sema_server(void);
+  int cleanup_shm(void);
 
   
-  ProgMode _progModeId;
+  ProgMode _progMode;
   bool _serverDown;
   int _fdServerConnect;
   ClientRequestMsg_t* _memServerConnect;   //
